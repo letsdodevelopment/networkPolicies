@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: fine-tuned-policy
+  namespace: network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: hello-app
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              network: frontend
+          podSelector:
+            matchLabels:
+              app: sample-app
+      ports:
+        - port: 8080
+          protocol: TCP
+# Create a network policy to allow traffic to the hello pod
+# in the network-policy project from the sample-app pod in the
+# different-namespace project via TCP on port 8080.
+# Use the resource file at ~/DO280/labs/network-policy/allow-specific.yaml.
