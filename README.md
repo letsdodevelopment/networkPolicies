@@ -114,4 +114,6 @@ Status:       Active
 
 now apply the policy and check the connection. It should work.
 
-## Additional Notes
+## Additional Notes:
+
+- The other files e.g. qa_hello_app.yaml is to learn about labels. e.g. spec.selector.matchLabels and spec.template.metadata.labels. you can ignore test_app.yaml file. It is duplicate of qa_hello_app.yaml
