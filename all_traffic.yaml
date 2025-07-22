@@ -11,7 +11,7 @@ spec:
     - from:
         - namespaceSelector:
             matchLabels:
-              network: frontend
+              kubernetes.io/metadata.name: frontend
           podSelector:
             matchLabels:
               app: sample-app
