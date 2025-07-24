@@ -13,13 +13,13 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      deployment: hello-app-qa
+      deployment: hello-app-qa # this label must match with labels inside template
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        deployment: hello-app-qa
+        deployment: hello-app-qa # this label must match with labels inside spec
     spec:
       containers:
       - image: registry.redhat.io/ubi9/httpd-24
