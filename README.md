@@ -52,31 +52,38 @@ Try to access the hello-app from this project.
 
 oc rsh sample-app-856679698b-bchbv curl http://hello-app:8080
 # -----------   (### OutPut ###)   -----------#
-curl: (6) Could not resolve host: hello-app
-command terminated with exit code 6
+# ----------- curl: (6) Could not resolve host: hello-app
+# ----------- command terminated with exit code 6
 # -----------   [### OutPut ###]   -----------#
-# Above is expected, because we need a ip address (or FQDN of the pod which is nothing but 10-217-0-76.hello-app.network-policy.apps-crc.testing) of the pod to access service across the project
-
+# Above is expected, because we need a ip address (or FQDN of the pod which is nothing
+# but 10-217-0-76.hello-app.network-policy.apps-crc.testing) of the pod
+# to access service across the project
 
 oc get pods -o wide -n network-policy
+# -----------   [### OutPut ###]   -----------#
 NAME                         READY   STATUS    RESTARTS   AGE     IP            NODE   NOMINATED NODE   READINESS GATES
 hello-app-74447f4c8d-k5x4x   1/1     Running   0          13m     10.217.0.76   crc    <none>           <none>
 test-app-6d56b75c9f-n242w    1/1     Running   0          7m46s   10.217.0.81   crc    <none>           <none>
+# -----------   [### OutPut ###]   -----------#
 
 oc rsh sample-app-856679698b-bchbv curl http://10.217.0.76:8080 | grep installed
 
 # -----------   [### OutPut ###]   -----------#
-<p>This page is used to test the proper operation of the HTTP server after it has been installed. If you can read this page, it means that the HTTP server installed at this site is working properly.</p>
+<p>This page is used to test the proper operation of the HTTP server
+# after it has been installed. If you can read this page, it means
+# that the HTTP server installed at this site is working properly.</p>
 # -----------   [### OutPut ###]   -----------#
 
 ```
 
-## Now, lets change this behavior using network policies.
+### Create network policies
 
-### To create a network policies you need labels on the pod and also label on the namespace
+To create a network policies you need labels on the pod and also label on the namespace.
+To start lets apply deny-all.yaml file. It denies traffic to everyone.
 
 ```shell
-# always refer namespace where you wish to create network policy, in my case i have added namespace in the yaml file.
+# always refer namespace where you wish to create network policy,
+# in my case i have added namespace in the yaml file.
 
 oc create -f deny-all.yaml -n network-policy
 
@@ -85,11 +92,11 @@ oc create -f deny-all.yaml -n network-policy
 ### Try again the connectivity to hello-app
 
 ```shell
-# below fails as there is now deny all on hello-app
+# below fails as there is now, deny all on hello-app
 oc rsh sample-app-856679698b-bchbv curl http://10.217.0.76:8080 | grep installed
 ```
 
-## Finetune the policy
+## Allow traffic for specific pods and namespace
 
 Now, lets fine tune the policy to allow only pods which has label app=sample-app and reside in the namespace which has label kubernetes.io/metadata.name: frontend.
 
@@ -112,8 +119,17 @@ Annotations:  openshift.io/description:
 Status:       Active
 ```
 
-now apply the policy and check the connection. It should work.
+now apply the policy all_traffic.yaml and check the connection. It should work.
+
+oc apply -f all_traffic.yaml
 
 ## Additional Notes:
 
-- The other files e.g. qa_hello_app.yaml is to learn about labels. e.g. spec.selector.matchLabels and spec.template.metadata.labels. you can ignore test_app.yaml file. It is duplicate of qa_hello_app.yaml
+- The other files e.g. qa_hello_app.yaml is to learn about labels. e.g. spec.selector.matchLabels and spec.template.metadata.labels. you can ignore test_app.yaml file. It is duplicate of qa_hello_app.yaml.
+
+## Allow traffic from ingress
+
+To allow traffic from ingress you must remember the label which is
+
+policy-group.network.openshift.io/ingress:
+
